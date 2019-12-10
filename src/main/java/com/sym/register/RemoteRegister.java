@@ -43,7 +43,7 @@ public class RemoteRegister {
     //通过文件共享模拟注册中心的数据共享
     public static void saveFile(){
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream("/tmp.txt");
+            FileOutputStream fileOutputStream = new FileOutputStream("E:\\tmp.txt");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(REGISTER);
         } catch (FileNotFoundException e) {
@@ -55,7 +55,7 @@ public class RemoteRegister {
 
     public static Map<String, List<URL>> getFile() {
         try {
-            FileInputStream fileInputStream = new FileInputStream("/tmp.txt");
+            FileInputStream fileInputStream = new FileInputStream("E:\\tmp.txt");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             REGISTER = (Map<String, List<URL>>) objectInputStream.readObject();
 

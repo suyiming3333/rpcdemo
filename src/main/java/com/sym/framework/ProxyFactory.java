@@ -1,5 +1,6 @@
 package com.sym.framework;
 
+import com.sym.protocal.dubbo.NettyClient;
 import com.sym.protocal.http.HttpClient;
 import com.sym.provider.api.HelloServiceI;
 import com.sym.register.RemoteRegister;
@@ -25,7 +26,8 @@ public class ProxyFactory {
                 new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        HttpClient httpClient =  new HttpClient();
+//                        HttpClient httpClient =  new HttpClient();
+                        NettyClient httpClient = new NettyClient();
                         Invocation invocation = new Invocation(
                                 HelloServiceI.class.getName(),
                                 method.getName(),

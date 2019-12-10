@@ -1,6 +1,8 @@
 package com.sym.provider;
 
 import com.sym.framework.URL;
+import com.sym.protocal.dubbo.NettyClient;
+import com.sym.protocal.dubbo.NettyServer;
 import com.sym.protocal.http.HttpServer;
 import com.sym.provider.api.HelloServiceI;
 import com.sym.provider.impl.HelloServiceImpl;
@@ -24,7 +26,8 @@ public class Provider {
         URL url = new URL("localhost",8080);
         RemoteRegister.regist(HelloServiceI.class.getName(),url);
         //3.服务启动
-        HttpServer httpServer = new HttpServer();
-        httpServer.start("localhost",8080);
+//        HttpServer httpServer = new HttpServer();
+        NettyServer httpServer = new NettyServer();
+        httpServer.start("127.0.0.1",8080);
     }
 }
