@@ -23,7 +23,7 @@ public class Provider {
         LocalRegister.regist(HelloServiceI.class.getName(), HelloServiceImpl.class);
 
         //2.远程服务注册
-        URL url = new URL("localhost",8080);
+        URL url = new URL("127.0.0.1",8080);
         RemoteRegister.regist(HelloServiceI.class.getName(),url);
         //3.服务启动
 //        HttpServer httpServer = new HttpServer();

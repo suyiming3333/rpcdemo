@@ -19,7 +19,7 @@ import java.lang.reflect.Proxy;
  */
 public class ProxyFactory {
 
-    public static <T> T getProxy(final Class interfaceName){
+    public static <T> T getProxy(final Class<T> interfaceName){
         return (T) Proxy.newProxyInstance(
                 interfaceName.getClassLoader(),
                 new Class[]{interfaceName},
@@ -29,13 +29,14 @@ public class ProxyFactory {
 //                        HttpClient httpClient =  new HttpClient();
                         NettyClient httpClient = new NettyClient();
                         Invocation invocation = new Invocation(
-                                HelloServiceI.class.getName(),
+                                interfaceName.getName(),
                                 method.getName(),
                                 method.getParameterTypes(),
                                 args);
 
                         URL url = RemoteRegister.random(interfaceName.getName());
-                        String reslt = httpClient.send(url.getHostName(),url.getPort(),invocation);
+
+                        String reslt = httpClient.send("127.0.0.1",8080,invocation);
                         return reslt;
                     }
                 });
