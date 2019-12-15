@@ -36,7 +36,8 @@ public class ProxyFactory {
 
                         URL url = RemoteRegister.random(interfaceName.getName());
 
-                        String reslt = httpClient.send("127.0.0.1",8080,invocation);
+                        String reslt = httpClient.send(url.getHostName(),url.getPort(),invocation);
+                        System.out.println("result:"+reslt);
                         return reslt;
                     }
                 });

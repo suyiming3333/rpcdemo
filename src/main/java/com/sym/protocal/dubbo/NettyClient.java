@@ -3,6 +3,7 @@ package com.sym.protocal.dubbo;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.sym.framework.Invocation;
 import com.sym.provider.api.HelloServiceI;
+import com.sym.provider.impl.HelloServiceImpl;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -58,19 +59,21 @@ public class NettyClient<T> {
                 });
         try {
             ChannelFuture cf = b.connect(hostname, port).sync();
-            Invocation invocation = new Invocation(HelloServiceI.class.getName(),"sayHello",new Class[]{String.class},new Object[]{"suyiming"});
-
-            cf.channel().writeAndFlush(invocation);
+//            Invocation invocation = new Invocation(HelloServiceI.class.getName(),"sayHello",new Class[]{String.class},new Object[]{"suyiming"});
+////
+//            cf.channel().writeAndFlush(invocation);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public String send(String hostname, Integer port, Invocation invocation) {
+    public String send(String hostname, Integer port, Invocation invocation) throws InterruptedException {
         String result ="";
         if (client == null) {
             start(hostname, port);
         }
+
+//        Thread.sleep(2000);
         client.setInvocation(invocation);
 
         try {

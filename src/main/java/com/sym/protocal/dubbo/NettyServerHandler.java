@@ -22,9 +22,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         Invocation invocation = (Invocation) msg;
         Class implClass = LocalRegister.get(invocation.getInterfaceName());
         Method method = implClass.getMethod(invocation.getMethodName(), invocation.getParamTypes());
-        String invoke = (String) method.invoke(implClass, invocation.getParams());
+        String invoke = (String) method.invoke(implClass.newInstance(), invocation.getParams());
         System.out.println("Netty===============" + invoke);
-        ctx.writeAndFlush("Netty: " + invoke);
+        ctx.writeAndFlush("rpc invoke: " + invoke);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel inComingChannel = ctx.channel();
-        System.out.println(inComingChannel.remoteAddress()+"离开了");
+        System.out.println(inComingChannel.remoteAddress()+"离开了"+System.currentTimeMillis());
         inComingChannel.writeAndFlush("[client]"+inComingChannel.remoteAddress()+"掉线\n");
     }
 

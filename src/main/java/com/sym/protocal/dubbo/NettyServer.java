@@ -8,6 +8,9 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
@@ -38,19 +41,22 @@ public class NettyServer {
                     @Override
                     protected void initChannel(SocketChannel sc) throws Exception {
                         ChannelPipeline p = sc.pipeline();
-                        p.addLast(new NettyServerHandler());
+                        p.addLast("decoder", new ObjectDecoder(ClassResolvers
+                                .weakCachingConcurrentResolver(this.getClass().getClassLoader())))
+                                .addLast("encoder", new ObjectEncoder())
+                                .addLast(new NettyServerHandler());
                     }
                 });
 
         try {
             ChannelFuture future = b.bind(port).sync();
             System.out.println("netty server start");
-            future.channel().closeFuture().sync();
+//            future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        bossGroup.shutdownGracefully();
-        workerGroup.shutdownGracefully();
+//        bossGroup.shutdownGracefully();
+//        workerGroup.shutdownGracefully();
     }
 }

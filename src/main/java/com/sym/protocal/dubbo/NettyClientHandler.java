@@ -2,13 +2,12 @@ package com.sym.protocal.dubbo;
 
 import com.sym.framework.Invocation;
 import com.sym.provider.LocalRegister;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.*;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author suyiming3333@gmail.com
@@ -35,7 +34,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter implements 
 //    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
 //        future = ctx.writeAndFlush(invocation);
 //    }
-//
+
 
     /**
      * 接收服务端的响应数据
@@ -45,25 +44,42 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter implements 
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("Netty===============" + msg);
-//        ctx.writeAndFlush("Netty: " + msg);
+        System.out.println("收到server的消息===============" + msg);
+//        future = ctx.writeAndFlush("Netty: " + msg);
+//        System.out.println("future"+future.get());
+
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("脸上服务武器啦");
-        future = ctx.pipeline().channel().writeAndFlush(invocation);
+        System.out.println("连上服务器啦");
+        Thread.sleep(1000);
+        future = ctx.writeAndFlush(invocation);
+        ((ChannelFuture) future).addListener(new ChannelFutureListener(){
+            @Override
+            public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                System.out.println("future 完成会进入到这里");
+            }
+        });
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        Channel inComingChannel = ctx.channel();
+        System.out.println("我掉线了"+System.currentTimeMillis());
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        System.out.println("有异常吗");
+        cause.printStackTrace();
         ctx.close();
     }
 
 
     @Override
     public Object call() throws Exception {
-        System.out.println("1");
+        System.out.println("执行call()");
         return future;
     }
 }
