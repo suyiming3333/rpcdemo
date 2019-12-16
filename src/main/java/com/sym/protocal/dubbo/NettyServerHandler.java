@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * @author suyiming3333@gmail.com
@@ -17,14 +18,34 @@ import java.lang.reflect.Method;
  * @date 2019/12/10 21:01
  */
 public class NettyServerHandler extends ChannelInboundHandlerAdapter {
-    @Override
+
+    private Map<String, Object> registryMap;
+    public NettyServerHandler(Map<String,Object> registryMap){
+        this.registryMap = registryMap;
+    }
+
+    //读取客户端发送过来的消息
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        Invocation invocation = (Invocation) msg;
-        Class implClass = LocalRegister.get(invocation.getInterfaceName());
-        Method method = implClass.getMethod(invocation.getMethodName(), invocation.getParamTypes());
-        String invoke = (String) method.invoke(implClass.newInstance(), invocation.getParams());
-        System.out.println("Netty===============" + invoke);
-        ctx.writeAndFlush("rpc invoke: " + invoke);
+        System.out.println("Receive from Client [" + ctx.channel().remoteAddress() + "], msg = [" + msg + "]");
+        if(msg instanceof Invocation){
+            Invocation invocation = (Invocation) msg;
+            Object result = "Provider has no method.";
+//            Class implClass = LocalRegister.get(invocation.getInterfaceName());
+            if(registryMap.containsKey(invocation.getInterfaceName())){
+                //获取到对应的实现类
+                Object provider = registryMap.get(invocation.getInterfaceName());
+                //invoke
+                result = provider.getClass()
+                        .getMethod(invocation.getMethodName(),invocation.getParamTypes())
+                        .invoke(provider,invocation.getParams());
+            }
+            ctx.writeAndFlush("rpc invoke: " + result);
+            System.out.println("Netty server invoke==============="+result);
+        }
+
+
+//        Method method = implClass.getMethod(invocation.getMethodName(), invocation.getParamTypes());
+//        String invoke = (String) method.invoke(implClass.newInstance(), invocation.getParams());
     }
 
     @Override

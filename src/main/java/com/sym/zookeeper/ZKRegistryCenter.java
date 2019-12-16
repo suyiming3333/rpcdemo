@@ -48,7 +48,7 @@ public class ZKRegistryCenter implements RegistryCenter {
             String addressPath = servicePath + "/" + serviceAddress;
             //添加服务地址的子节点
             String hostNode = curator.create()
-                    .withMode(CreateMode.PERSISTENT)
+                    .withMode(CreateMode.EPHEMERAL)
                     .forPath(addressPath);
             System.out.println("hostNode = " + hostNode);
 

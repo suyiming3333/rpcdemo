@@ -5,6 +5,8 @@ import com.sym.protocal.dubbo.NettyClientHandler;
 import com.sym.protocal.http.HttpClient;
 import com.sym.provider.api.HelloServiceI;
 import com.sym.register.RemoteRegister;
+import com.sym.zookeeper.ServiceDiscovery;
+import com.sym.zookeeper.ServiceDiscoveryImpl;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -67,6 +69,9 @@ public class ProxyFactory {
      * @return
      */
     private static Object rpcInvoke(Class<?> interfaceName, Method method, Object[] args) {
+        ServiceDiscovery serviceDiscovery = new ServiceDiscoveryImpl();
+        String serverAddress = serviceDiscovery.discover(interfaceName.getName());
+
         final NettyClientHandler clientHandler = new NettyClientHandler();
         NioEventLoopGroup group = new NioEventLoopGroup();
         Bootstrap b = new Bootstrap();
@@ -84,10 +89,12 @@ public class ProxyFactory {
                     }
                 });
 
-        URL url = RemoteRegister.random(interfaceName.getName());
+//        URL url = RemoteRegister.random(interfaceName.getName());
+        String ip = serverAddress.split(":")[0];
+        String port = serverAddress.split(":")[1];
         Invocation invocation = new Invocation(interfaceName.getName(),method.getName(),method.getParameterTypes(),args);
         try {
-            ChannelFuture cf = b.connect(url.getHostName(), url.getPort()).sync();
+            ChannelFuture cf = b.connect(ip, Integer.valueOf(port)).sync();
             Future future = cf.channel().writeAndFlush(invocation);
             future.addListener(new ChannelFutureListener(){
                 @Override
