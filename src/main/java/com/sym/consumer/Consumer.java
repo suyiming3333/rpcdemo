@@ -20,7 +20,7 @@ public class Consumer {
 
         String result = helloService.sayHello("suyiming");
 
-        System.out.println(result);
+        System.out.println("result:"+result);
 
     }
 }

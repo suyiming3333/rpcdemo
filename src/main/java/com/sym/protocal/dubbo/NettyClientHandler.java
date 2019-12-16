@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class NettyClientHandler extends ChannelInboundHandlerAdapter implements Callable {
 
+    private Object object;
     private Invocation invocation;
     private Future future;
 
@@ -45,22 +46,27 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter implements 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("收到server的消息===============" + msg);
+        this.object = msg;
 //        future = ctx.writeAndFlush("Netty: " + msg);
 //        System.out.println("future"+future.get());
 
     }
 
+    public Object getResult(){
+        return this.object;
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("连上服务器啦");
-        Thread.sleep(1000);
-        future = ctx.writeAndFlush(invocation);
-        ((ChannelFuture) future).addListener(new ChannelFutureListener(){
-            @Override
-            public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                System.out.println("future 完成会进入到这里");
-            }
-        });
+//        Thread.sleep(1000);
+//        future = ctx.writeAndFlush(invocation);
+//        ((ChannelFuture) future).addListener(new ChannelFutureListener(){
+//            @Override
+//            public void operationComplete(ChannelFuture channelFuture) throws Exception {
+//                System.out.println("future 完成会进入到这里");
+//            }
+//        });
     }
 
     @Override
