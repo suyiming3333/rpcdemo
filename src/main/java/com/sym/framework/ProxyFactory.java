@@ -95,6 +95,7 @@ public class ProxyFactory {
                     System.out.println("write 执行完成");
                     //关闭连接
 //                    channelFuture.channel().close();
+
                 }
             });
         } catch (InterruptedException e) {
